@@ -39,7 +39,7 @@ NSLog(@"result _ %f", fReturn);
 ```
 ## 3、组合pipe
 多个pipe可以相互组合，组合后的pipe将变成一个pipe链，使用链上任一pipe触发方法，链上注册了该方法的pipe将被逐一顺序执行，顺序将遵循组合时的顺序执行。若pipe中未注册该方法，则会跳过此pipe，执行下一个pipe。
-```objctivec
+```objectivec
 @protocol actionPipeProtocol <NSObject>
 - (void)someFunc2WithNumber:(CGSize)size object:(id)objc;
 - (void)someFunc3;
@@ -285,7 +285,7 @@ NSLog(@"result _ %@", fReturn);
 ```
 ## 6、将对象中的方法注册到pipe中
 pipe也可以接收对象作为响应者，只要对象实现了所注册的selector也能被调用。类似于成为了对象的替身，同样注册了对象的pipe也可以跟其他pipe进行组合。
-```
+```objectivec
 @interface testObject : NSObject
 - (id)someFuncWithNumber:(NSInteger)number object:(id)objc;
 @end
