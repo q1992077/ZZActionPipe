@@ -18,5 +18,7 @@
 
 @property (nonatomic, assign) NSInteger state;
 @property (nonatomic, assign) BOOL isNotLimit;
+@property (nonatomic, strong) JDTuple * _Nullable tuple;
+
 @end
 
