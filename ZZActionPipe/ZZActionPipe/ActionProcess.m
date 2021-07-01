@@ -121,12 +121,12 @@
 
 @implementation ActionProcess (Processprivate)
 
-- (instancetype)initWith:(NSInteger)state pipe:(ZZActionPipe *)pipe invocation:(NSInvocation *)invocation {
-    self = [super init];
-    if (self) {
+- (instancetype)initWithState:(NSInteger)state pipe:(ZZActionPipe *)pipe invocation:(NSInvocation *)invocation extraTuple:(JDTuple *)extraTuple {
+    if (self = [super init]) {
         _state = state;
         _pipe = pipe;
         _currentInvocation = invocation;
+        _tmpTuple = extraTuple;
     }
     return self;
 }

@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) ZZActionPipe *pipe;
 @property (nonatomic, readonly) NSInvocation *currentInvocation;
 
-- (instancetype)initWith:(NSInteger)state pipe:(ZZActionPipe *)pipe invocation:(NSInvocation *)invocation;
+- (instancetype)initWithState:(NSInteger)state pipe:(ZZActionPipe *)pipe invocation:(NSInvocation *)invocation extraTuple:(JDTuple *)extraTuple;
 @end
 
 NS_ASSUME_NONNULL_END
