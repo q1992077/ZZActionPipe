@@ -25,8 +25,11 @@
 }
 
 - (void)registAction:(ZZActionPipe *)pipe {
+    
     pipe.registAction(@selector(loadData)).state(k_action_start).action = pipe_createAction(){
         ZZActionPipe<PipeActionProtocol> *pipe = [ZZActionPipe<PipeActionProtocol> getRootPipe];
+        
+        //模拟网络请求
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             self.model = [listModel new];
             dataModel *model1 = [dataModel new];
@@ -65,10 +68,12 @@
             NSInteger cellKey = 0;
             if (indexPath.row % 2 == 0) {
                 cellKey = 100;
+            }else {
+                cellKey = 200;
             }
             NSString *title = self.model.list[indexPath.row].name;
             NSString *sex = self.model.list[indexPath.row].sex == 1 ? @"男" : @"女";
-            NSString *subTitle = [NSString stringWithFormat:@"%@ _ %@", self.model.list[indexPath.row].age, sex];
+            NSString *subTitle = [NSString stringWithFormat:@"%@ _ %@ _ click _ %ld", self.model.list[indexPath.row].age, sex, self.model.list[indexPath.row].clickTimes];
             process.tmpTuple = jd_tuple(cellKey, title, subTitle);
         }
         
@@ -90,6 +95,15 @@
         ActionProcess *process = [ActionProcess getCurrentActionProcess];
         process.tmpTuple = jd_tuple(cellKey);
         return CGSizeZero;
+    };
+    
+    pipe.registAction(@selector(cellaction:)).action = pipe_createAction(NSInteger row) {
+        if (row < self.model.list.count) {
+            self.model.list[row].clickTimes += 1;
+            
+            ZZActionPipe<PipeActionProtocol> *rootPipe = [ZZActionPipe<PipeActionProtocol> getRootPipe];
+            [rootPipe.doWithState(k_action_success) loadData];
+        }
     };
 }
 

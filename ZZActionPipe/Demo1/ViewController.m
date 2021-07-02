@@ -31,10 +31,6 @@
     [self.pipe.doWithState(k_action_start) loadData];
 }
 
-- (void)cellaction:(NSInteger)row {
-    NSLog(@"%ld", row);
-}
-
 - (void)loadData {
     [_collectionView reloadData];
 }

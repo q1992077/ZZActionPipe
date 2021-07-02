@@ -49,8 +49,7 @@
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     ActionProcess *proceess = [ActionProcess getCurrentActionProcess];
-    JD_TUPLE(NSString *, NSString *) tmp = proceess.tmpTuple;
-    jd_unpack(tmp)^(arg_ph empty, NSString *title, NSString *subTitle){
+    jd_unpack(proceess.tmpTuple)^(arg_ph empty, NSString *title, NSString *subTitle){
         self.labTitle.text = title;
         self.labSubtitle.text = subTitle;
         [self.labTitle sizeToFit];

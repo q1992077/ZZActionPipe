@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *age;
 @property (nonatomic, assign) NSInteger sex;
+@property (nonatomic, assign) NSInteger clickTimes;
 @end
 
 NS_ASSUME_NONNULL_END

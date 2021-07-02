@@ -9,7 +9,7 @@
 #import "ViewMoel2.h"
 #import "ZZActionPipe.h"
 
-@protocol pipeAction <NSObject>
+@protocol pipeActionProtocol <NSObject>
 
 - (void)filterLoginWithName:(NSString *)strName passWord:(NSString *)strPassWord faild:(BOOL)bFaild;
 - (void)loginAction;
@@ -18,6 +18,7 @@
 
 @interface ViewMoel2 ()
 
+//model
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *passWord;
 
@@ -37,15 +38,17 @@
     };
     
     pipe.registAction(@selector(loginAction)).state(k_action_start).action = pipe_createAction(){
-        ZZActionPipe *rootPipe = [ZZActionPipe getRootPipe];
+        
+        ZZActionPipe<pipeActionProtocol> *rootPipe = [ZZActionPipe<pipeActionProtocol> getRootPipe];
+        
+        //模拟接口请求
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             if ([self.passWord isEqualToString:@"00000000"]) {
-                [(id<pipeAction>)rootPipe.doWithState(k_action_success) loginAction];
+                [rootPipe.doWithState(k_action_success) loginAction];
             }else {
-                [(id<pipeAction>)rootPipe.doWithState(k_action_error) loginAction];
+                [rootPipe.doWithState(k_action_error) loginAction];
             }
         });
-
     };
 }
 

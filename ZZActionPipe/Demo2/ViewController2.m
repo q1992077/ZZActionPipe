@@ -9,7 +9,7 @@
 #import "ViewController2.h"
 #import "ZZActionPipe.h"
 
-@protocol pipeAction <NSObject>
+@protocol pipeActionProtocol <NSObject>
 
 - (void)filterLoginWithName:(NSString *)strName passWord:(NSString *)strPassWord faild:(BOOL)bFaild;
 - (void)loginAction;
@@ -39,27 +39,26 @@
     self.textName = [[UITextField alloc]initWithFrame:(CGRect){CGPointZero, (CGSize){CGRectGetWidth(self.view.frame) * 0.7, 50}}];
     self.textName.backgroundColor = [UIColor whiteColor];
     self.textName.center = (CGPoint){CGRectGetWidth(self.view.frame) / 2, 200};
-    self.textName.delegate = (id<UITextFieldDelegate>)self;
+    self.textName.delegate = (id<UITextFieldDelegate>)self.vcPipe;
+    self.textName.placeholder = @"Name";
     
     self.textPassWord = [[UITextField alloc] initWithFrame:(CGRect){CGPointZero, self.textName.frame.size}];
     self.textPassWord.backgroundColor = [UIColor whiteColor];
+    self.textPassWord.passwordRules = [UITextInputPasswordRules passwordRulesWithDescriptor:@"*"];
     self.textPassWord.center = (CGPoint){CGRectGetWidth(self.view.frame) / 2, CGRectGetMaxY(self.textName.frame) + 100};
-    self.textPassWord.delegate = (id<UITextFieldDelegate>)self;
+    self.textPassWord.delegate = (id<UITextFieldDelegate>)self.vcPipe;
+    self.textPassWord.placeholder = @"PassWord";
     
     self.btnLogin = [[UIButton alloc] initWithFrame:(CGRect){CGPointZero, (CGSize){CGRectGetWidth(self.view.frame) * 0.5, 50}}];
     self.btnLogin.backgroundColor = [UIColor grayColor];
+    [self.btnLogin setEnabled:NO];
     self.btnLogin.center = (CGPoint){self.textPassWord.center.x, self.textPassWord.center.y + 50};
     [self.btnLogin setTitle:@"Login" forState:UIControlStateNormal];
     [self.btnLogin addTarget:self.vcPipe action:@selector(loginAction) forControlEvents:UIControlEventTouchUpInside];
-    [self.btnLogin setEnabled:NO];
     
     [self.view addSubview:self.textName];
     [self.view addSubview:self.textPassWord];
     [self.view addSubview:self.btnLogin];
-}
-
-- (void)textFieldDidChangeSelection:(UITextField *)textField {
-    [(id <pipeAction>)self.vcPipe filterLoginWithName:self.textName.text passWord:self.textPassWord.text faild:YES];
 }
 
 - (void)filterLoginWithName:(NSString *)strName passWord:(NSString *)strPassWord faild:(BOOL)bFaild{
@@ -86,7 +85,15 @@
         _vcPipe = [ZZActionPipe new];
         _vcPipe.registAction(@selector(filterLoginWithName:passWord:faild:)).delegate = self;
         _vcPipe.registAction(@selector(loginAction)).state(k_action_success | k_action_error).delegate = self;
+        
+        //注册代理 UITextFieldDelegate
+        __weak typeof(self) weakSelf = self;
+        _vcPipe.registAction(@selector(textFieldDidChangeSelection:)).action = pipe_createAction(UITextField *textField) {
+            [(id<pipeActionProtocol>)weakSelf.vcPipe filterLoginWithName:weakSelf.textName.text
+                                                                passWord:weakSelf.textPassWord.text
+                                                                   faild:YES];
+        };
     }
-    return _vcPipe;
+    return (ZZActionPipe *)_vcPipe;
 }
 @end
