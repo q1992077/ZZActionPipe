@@ -21,8 +21,6 @@ typedef NS_OPTIONS(NSInteger, JDPipeActionState) {
 
 #define pipe_createAction(...) ^(SEL selector, ##__VA_ARGS__)
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface ZZActionPipe<T> : NSProxy
 
 + (instancetype)new;
@@ -33,12 +31,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (ActionRequirement*(^)(SEL))registAction;
 - (ZZActionPipe *)addPipe:(ZZActionPipe *)pipe;
 
+- (T(^)(NSInteger,JDTuple *))doWithStateAndTuple;
+- (T(^)(JDTuple *))doWithTuple;
 - (T(^)(NSInteger))doWithState;
 - (T(^)(void))doDirectly;
 
 - (void)retainPipeBy:(id)objc;
 
-- (T(^)(JDTuple *))exTuple;
 @end
 
 @interface ZZActionPipe (Class)
@@ -47,5 +46,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)registProtocol:(NSArray<Protocol *> *)protocols strongDelegate:(id)delegate actionRequired:(void(^)(SEL selector, ActionRequirement *requirement))block;
 
 @end
-
-NS_ASSUME_NONNULL_END

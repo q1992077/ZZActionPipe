@@ -57,7 +57,7 @@ typedef int JDBlockDescriptionFlags;
 @property (nonatomic, strong) NSMutableDictionary *dicSelector;
 @property (nonatomic, weak) ZZActionPipe *rootPipe;
 @property (nonatomic, strong) ZZActionPipe *nextPipe;
-@property (nonatomic, strong) NSMutableDictionary *pipeActions;
+@property (nonatomic, strong) NSMutableDictionary *pipeActions; // 注册的方法
 
 @property (nonatomic, strong) NSMutableDictionary *actionCache; //调用链缓存
 @end
@@ -233,7 +233,16 @@ typedef int JDBlockDescriptionFlags;
     return pipe;
 }
 
-- (id(^)(NSInteger))doWithState {
+- (id (^)(void))doDirectly {
+    return ^(void){
+        ZZTmpRootPipe *tmp = [ZZTmpRootPipe new];
+        tmp.isNotLimit = YES;
+        [tmp addPipe:self.rootPipe];
+        return tmp;
+    };
+}
+
+- (id (^)(NSInteger))doWithState {
     return ^(NSInteger state){
         ZZTmpRootPipe *tmp = [ZZTmpRootPipe new];
         tmp.state = state;
@@ -242,18 +251,23 @@ typedef int JDBlockDescriptionFlags;
     };
 }
 
-- (id(^)(void))doDirectly {
-    return ^{
+- (id (^)(JDTuple *))doWithTuple {
+    return ^(JDTuple *tuple){
         ZZTmpRootPipe *tmp = [ZZTmpRootPipe new];
         tmp.isNotLimit = YES;
+        tmp.tuple = tuple;
         [tmp addPipe:self.rootPipe];
         return tmp;
     };
 }
 
-- (id(^)(JDTuple *))exTuple {
-    return ^(JDTuple *tuple){
-        return self;
+- (id (^)(NSInteger, JDTuple *))doWithStateAndTuple {
+    return ^(NSInteger state,JDTuple *tuple){
+        ZZTmpRootPipe *tmp = [ZZTmpRootPipe new];
+        tmp.state = state;
+        tmp.tuple = tuple;
+        [tmp addPipe:self.rootPipe];
+        return tmp;
     };
 }
 
@@ -346,12 +360,14 @@ typedef int JDBlockDescriptionFlags;
 - (void)forwardInvocation:(NSInvocation *)anInvocation {
     
     //invocation 压栈
+    JDTuple *tuple = nil;
     NSInteger state = zzRequirementStateDefault;
     if([self class] == [ZZTmpRootPipe class]) {
         state = ((ZZTmpRootPipe *)self).state;
+        tuple = ((ZZTmpRootPipe *)self).tuple;
     }
     ActionProcess *tmpProcess = NSThread.currentThread.threadDictionary[pipe_current_process];
-    ActionProcess *newProcess = [[ActionProcess alloc] initWith:state pipe:self.rootPipe invocation:anInvocation];
+    ActionProcess *newProcess = [[ActionProcess alloc] initWithState:state pipe:self.rootPipe invocation:anInvocation extraTuple:tuple];
     [NSThread.currentThread.threadDictionary setObject:newProcess forKey:pipe_current_process];
     
     NSDictionary *dicMethod = objc_getAssociatedObject(anInvocation.methodSignature, pipe_key_Methods);
