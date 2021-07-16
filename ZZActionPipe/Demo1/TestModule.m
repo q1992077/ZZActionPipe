@@ -12,6 +12,7 @@
 #import "NewCollectionViewCell.h"
 #import "NewCollectionViewCell2.h"
 #import "ZZActionPipe.h"
+#import "MTA.h"
 
 @implementation Testmodule
 
@@ -19,7 +20,9 @@
     ViewController *vc = [ViewController new];
     ZZActionPipe *vmPipe = [ViewModel pipe];
     ZZActionPipe *cellPipe = [ZZActionPipe bundlePipes:@[[NewCollectionViewCell pipe], [NewCollectionViewCell2 pipe]]];
-    [[vmPipe addPipe:vc.pipe] addPipe:cellPipe];
+    ZZActionPipe *mtaPipe = [MTA pipe];
+    
+    [[[vmPipe addPipe:vc.pipe] addPipe:cellPipe] addPipe:mtaPipe];
     [vmPipe retainPipeBy:vc];
     return vc;
 }

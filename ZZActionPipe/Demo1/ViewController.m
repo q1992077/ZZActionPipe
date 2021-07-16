@@ -31,6 +31,10 @@
     [self.pipe.doWithState(k_action_start) loadData];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [(UIViewController *)self.pipe viewDidAppear:animated];
+}
+
 - (void)loadData {
     [_collectionView reloadData];
 }

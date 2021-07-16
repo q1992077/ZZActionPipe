@@ -9,7 +9,7 @@
 #import "ViewMoel2.h"
 #import "ZZActionPipe.h"
 
-@protocol pipeActionProtocol <NSObject>
+@protocol pipeActionProtocol
 
 - (void)filterLoginWithName:(NSString *)strName passWord:(NSString *)strPassWord faild:(BOOL)bFaild;
 - (void)loginAction;
@@ -26,8 +26,8 @@
 
 @implementation ViewMoel2
 
-- (void)registerPipe:(ZZActionPipe *)pipe {
-    pipe.registAction(@selector(filterLoginWithName:passWord:faild:)).action = pipe_createAction(NSString *strName, NSString *strPassWord, BOOL bFaild) {
+- (void)registerPipe:(ZZActionPipe *)vmPipe {
+    vmPipe.registAction(@selector(filterLoginWithName:passWord:faild:)).action = pipe_createAction(NSString *strName, NSString *strPassWord, BOOL bFaild) {
         self.name = strName;
         self.passWord = strPassWord;
         ActionProcess *process = [ActionProcess getCurrentActionProcess];
@@ -37,7 +37,7 @@
         }
     };
     
-    pipe.registAction(@selector(loginAction)).state(k_action_start).action = pipe_createAction(){
+    vmPipe.registAction(@selector(loginAction)).state(k_action_start).action = pipe_createAction(){
         
         ZZActionPipe<pipeActionProtocol> *rootPipe = [ZZActionPipe<pipeActionProtocol> getRootPipe];
         
