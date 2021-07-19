@@ -54,7 +54,10 @@
     [self.btnLogin setEnabled:NO];
     self.btnLogin.center = (CGPoint){self.textPassWord.center.x, self.textPassWord.center.y + 50};
     [self.btnLogin setTitle:@"Login" forState:UIControlStateNormal];
-    [self.btnLogin addTarget:self.vcPipe action:@selector(loginAction) forControlEvents:UIControlEventTouchUpInside];
+    
+    ZZActionPipe *loginPipe = self.vcPipe.doWithState(k_action_start);
+    [loginPipe retainPipeBy:self.btnLogin];
+    [self.btnLogin addTarget:loginPipe action:@selector(loginAction) forControlEvents:UIControlEventTouchUpInside];
     
     [self.view addSubview:self.textName];
     [self.view addSubview:self.textPassWord];
